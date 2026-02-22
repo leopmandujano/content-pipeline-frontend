@@ -13,13 +13,8 @@ function Pipeline() {
   const [copied, setCopied] = useState(false)
   const [animating, setAnimating] = useState(false)
 
-  const trendingTopics = [
-    "The Fed holding interest rates steady",
-    "S&P 500 hitting all time highs",
-    "Gen Z avoiding credit cards entirely",
-    "High yield savings accounts vs investing",
-    "The rise of micro-investing apps"
-  ]
+  const [trendingTopics, setTrendingTopics] = useState([])
+  const [loadingTopics, setLoadingTopics] = useState(true)
 
   useEffect(() => {
     const style = document.createElement('style')
@@ -103,6 +98,18 @@ function Pipeline() {
     const userData = JSON.parse(localStorage.getItem(email))
     if (!userData || !userData.onboarded) { navigate('/onboarding'); return }
     setUser(userData)
+    fetch('https://content-pipeline-production-2f9d.up.railway.app/research', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ niche: userData.niche })
+    })
+      .then(res => res.json())
+      .then(data => {
+        const parsed = data.topics.split('\n').filter(t => t.trim() !== '')
+        setTrendingTopics(parsed)
+        setLoadingTopics(false)
+      })
+      .catch(() => setLoadingTopics(false))
   }, [])
 
   const transitionToStep = (newStep, callback) => {
@@ -202,9 +209,13 @@ function Pipeline() {
 
           {step === 1 && (
             <>
-              <div style={s.stepLabel}>Step 01</div>
-              <div style={s.stepTitle}>Pick a trending topic</div>
               <div style={s.stepSub}>Select a topic to generate angles for</div>
+              {loadingTopics && (
+                <>
+                  <div style={s.loading}>Finding trending topics for {user.niche}...</div>
+                  <div className="loading-bar"><div className="loading-bar-fill" /></div>
+                </>
+              )}
               {trendingTopics.map((t, i) => (
                 <div key={i} className={`topic-card ${topic === t ? 'selected' : ''}`} onClick={() => generateAngles(t)}>
                   {t}
