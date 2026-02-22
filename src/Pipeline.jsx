@@ -130,7 +130,7 @@ function Pipeline() {
     })
     setLoading(true)
     try {
-      const res = await fetch('http://content-pipeline-production-2f9d.up.railway.app/ideate', {
+      const res = await fetch('https://content-pipeline-production-2f9d.up.railway.app/ideate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ topic: t, niche: user.niche })
