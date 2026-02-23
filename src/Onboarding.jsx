@@ -37,6 +37,15 @@ function Onboarding() {
     document.head.appendChild(style)
     return () => document.head.removeChild(style)
   }, [])
+  useEffect(() => {
+    const email = localStorage.getItem('currentUser')
+    if (!email) return
+    const userData = JSON.parse(localStorage.getItem(email))
+    if (!userData) return
+    if (userData.niche) setNiche(userData.niche)
+    if (userData.competitors) setCompetitors(userData.competitors.join(', '))
+    if (userData.exampleScript) setExampleScript(userData.exampleScript)
+  }, [])
 
   const handleSave = () => {
     if (!niche) { setError('Please enter your niche'); return }

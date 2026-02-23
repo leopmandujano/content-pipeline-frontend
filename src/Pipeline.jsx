@@ -105,7 +105,7 @@ function Pipeline() {
     })
       .then(res => res.json())
       .then(data => {
-        const parsed = data.topics.split('\n').filter(t => t.trim() !== '')
+        const parsed = data.topics.split('\n').filter(t => t.trim() !== '').map(t => t.replace(/^\d+\.\s*/, ''))
         setTrendingTopics(parsed)
         setLoadingTopics(false)
       })
